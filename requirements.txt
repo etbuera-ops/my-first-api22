@@ -1,3 +1,2 @@
-fastapi
-uvicorn
-httpx
+pip install playwright fastapi uvicorn
+playwright install chromium
