@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PH Tech Live Price Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-800 pb-6 mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                    PH Tech & Gadgets Monitor
+                </h1>
+                <p class="text-gray-400 mt-1">Live wholesale market pricing & inventory index tracking feed</p>
+            </div>
+            <button onclick="fetchLatestPrices()" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-200 ease-in-out flex items-center gap-2">
+                🔄 Sync Live Feed
+            </button>
+        </div>
+
+        <div class="mb-6">
+            <input type="text" id="searchInput" onkeyup="filterItems()" placeholder="Search tracked components or accessories..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div id="loadingState" class="text-center py-12 text-gray-400 font-medium">
+            <p class="animate-pulse">Querying cloud micro-containers for local pricing data arrays...</p>
+        </div>
+
+        <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+            </div>
+    </div>
+
+    <script>
+        // Replace this with your actual Render API address!
+        const API_URL = "https://ph-tech-api.onrender.com/get-prices";
+
+        async function fetchLatestPrices() {
+            const grid = document.getElementById('productGrid');
+            const loader = document.getElementById('loadingState');
+            
+            loader.classList.remove('hidden');
+            grid.classList.add('hidden');
+
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+                
+                if(result.status === "success") {
+                    renderCards(result.data);
+                    loader.classList.add('hidden');
+                    grid.classList.remove('hidden');
+                } else {
+                    loader.innerHTML = `<p class="text-red-400">Failed payload collection response: ${result.message}</p>`;
+                }
+            } catch (error) {
+                loader.innerHTML = `<p class="text-red-400">Gateway connectivity timeout error or blocked cross-origin request.</p>`;
+            }
+        }
+
+        function renderCards(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = ''; // Wipe stale rows
+
+            items.forEach(item => {
+                const isStocked = item.status === "In Stock";
+                const statusBadge = isStocked 
+                    ? `<span class="bg-emerald-950 text-emerald-400 px-2.5 py-1 rounded text-xs font-bold border border-emerald-800">AVAILABLE</span>`
+                    : `<span class="bg-rose-950 text-rose-400 px-2.5 py-1 rounded text-xs font-bold border border-rose-800">OUT OF STOCK</span>`;
+
+                const cardHtml = `
+                    <div class="product-card bg-gray-800 border border-gray-700 hover:border-gray-600 rounded-xl p-5 shadow-sm transition duration-150 hover:-translate-y-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="item-name text-lg font-bold text-white tracking-wide max-w-[70%]">${item.item_name}</h3>
+                            ${statusBadge}
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-700/50 flex justify-between items-baseline">
+                            <span class="text-xs text-gray-500 uppercase tracking-widest font-semibold">Benchmark Value</span>
+                            <span class="text-2xl font-black text-emerald-400 font-mono">${item.observed_price_ph}</span>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        function filterItems() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.getElementsByClassName('product-card');
+
+            for (let card of cards) {
+                const name = card.querySelector('.item-name').textContent.toLowerCase();
+                if (name.includes(query)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+
+        // Initialize and fire up the dashboard state array when view finishes loading
+        window.onload = fetchLatestPrices;
+    </script>
+</body>
+</html>
