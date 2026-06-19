@@ -3,149 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Tech Price Tracker</title>
+    <title>Local Automated Price Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { extend: { colors: { darkBg: '#0f172a', darkCard: '#1e293b' } } }
-        }
-    </script>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 transition-colors duration-300 min-h-screen font-sans">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans">
 
-    <nav class="border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-darkCard px-6 py-4 sticky top-0 z-50 shadow-sm">
+    <nav class="border-b border-slate-800 bg-slate-950 px-6 py-4 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 text-white p-2 rounded-lg shadow-md"><i class="fa-solid fa-globe text-xl"></i></div>
-                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Live Market Stream</span>
+                <span class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Local Automation Pipeline</span>
             </div>
-            <div class="flex items-center space-x-4">
-                <button onclick="fetchLivePrices()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition-all flex items-center space-x-2">
-                    <i class="fa-solid fa-arrows-rotate text-sm"></i><span>Scan Real Live Feeds</span>
-                </button>
-                <button onclick="toggleDarkMode()" class="p-2.5 rounded-lg border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300">
-                    <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
-                </button>
-            </div>
+            <button onclick="fetchLocalPrices()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition-all flex items-center space-x-2">
+                <i class="fa-solid fa-robot"></i><span>Run Local Browser Scraper</span>
+            </button>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-10">
-        <div class="mb-8 p-5 bg-indigo-50 dark:bg-slate-900/50 border border-indigo-100 dark:border-slate-800/80 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div>
-                <h2 class="text-lg font-semibold">Active Pipeline Stream</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Monitoring real-time e-commerce tech variants for active price markdown drops.</p>
-            </div>
-            <div class="flex items-center space-x-2 bg-white dark:bg-darkCard px-3 py-1.5 rounded-xl border border-gray-200 dark:border-slate-800 text-xs font-semibold text-indigo-600">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Local Fail-Safe Active</span>
-            </div>
-        </div>
-
-        <div id="price-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
-                <i class="fa-solid fa-spinner animate-spin text-4xl mb-4 text-indigo-500"></i>
-                <p class="text-sm font-medium">Contacting live internet tech warehouse directly...</p>
+        <div id="price-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="col-span-full text-center text-slate-500 py-20">
+                <p>Click "Run Local Browser Scraper" to initiate background automation tasks.</p>
             </div>
         </div>
     </main>
 
     <script>
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            html.classList.toggle('dark');
-            document.getElementById('theme-icon').className = html.classList.contains('dark') ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
-        }
+        // Points directly to the Python server engine running on your computer
+        const LOCAL_API = "http://127.0.0.1:8000/get-prices";
 
-        async function fetchLivePrices() {
+        async function fetchLocalPrices() {
             const grid = document.getElementById('price-grid');
-            
-            // Show loading spinner briefly to simulate a live server scan
             grid.innerHTML = `
                 <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
-                    <i class="fa-solid fa-spinner animate-spin text-4xl mb-4 text-indigo-500"></i>
-                    <p class="text-sm font-medium">Scanning e-commerce databases...</p>
+                    <i class="fa-solid fa-cog animate-spin text-4xl mb-4 text-emerald-400"></i>
+                    <p class="text-sm font-medium">Local Playwright instance scanning live web markup...</p>
                 </div>`;
-
+            
             try {
-                // Fail-safe real-world local product matrix to bypass broken online server nodes completely
-                const mockMarketData = [
-                    { title: "AULA F75 Mechanical Keyboard", price: 2799, discount: 30, img: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500&q=80" },
-                    { title: "Govee RGBIC LED Strip Light (5M)", price: 1499, discount: 25, img: "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=500&q=80" },
-                    { title: "Premium Felt Desk Mat (900x400mm)", price: 550, discount: 40, img: "https://images.unsplash.com/photo-1632292224971-0d45778b3af8?w=500&q=80" },
-                    { title: "Delux M618DB Vertical Mouse", price: 1200, discount: 20, img: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&q=80" },
-                    { title: "HyperX QuadCast S RGB Microphone", price: 8990, discount: 15, img: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=500&q=80" },
-                    { title: "Logitech G502 Hero Gaming Mouse", price: 3450, discount: 35, img: "https://images.unsplash.com/photo-1625842268584-8f3290462a41?w=500&q=80" }
-                ];
-
-                // Simple 500ms artificial delay to give it that "live application" scanning feel
-                await new Promise(resolve => setTimeout(resolve, 500));
+                const response = await fetch(LOCAL_API);
+                const result = await response.json();
                 
-                const liveItems = [];
-                
-                mockMarketData.forEach(prod => {
-                    const originalPrice = prod.price;
-                    const salePrice = originalPrice * (1 - (prod.discount / 100));
-                    
-                    const phpOriginal = originalPrice.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-                    const phpSale = salePrice.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-
-                    liveItems.push({
-                        item_name: prod.title,
-                        original_price: "₱" + phpOriginal,
-                        observed_price_ph: "₱" + phpSale,
-                        discount_tag: "-" + prod.discount + "% OFF",
-                        image_url: prod.img,
-                        store_url: "https://www.lazada.com.ph"
+                if (result.status === "success" && result.data) {
+                    grid.innerHTML = '';
+                    result.data.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = "bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-xl flex flex-col";
+                        card.innerHTML = `
+                            <div class="relative pt-[56.25%] bg-slate-900">
+                                <img src="${item.image_url}" class="absolute inset-0 w-full h-full object-cover">
+                                <span class="absolute top-3 left-3 bg-emerald-600 text-white px-2.5 py-1 rounded-md text-xs font-black shadow-md">${item.discount_tag}</span>
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="font-bold text-base mb-4">${item.item_name}</h3>
+                                <div class="flex justify-between items-baseline mb-4">
+                                    <span class="text-xs uppercase font-bold text-emerald-400">Live Scraped Price</span>
+                                    <span class="text-2xl font-black text-emerald-400">${item.observed_price_ph}</span>
+                                </div>
+                                <a href="${item.store_url}" target="_blank" class="text-center bg-slate-800 hover:bg-emerald-600 py-2 rounded-xl transition-all text-sm font-bold text-white">View Page Source</a>
+                            </div>`;
+                        grid.appendChild(card);
                     });
-                });
-                
-                displayItems(liveItems);
+                }
             } catch (e) {
-                console.error(e);
                 grid.innerHTML = `
-                    <div class="col-span-full bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-8 text-center text-red-600 dark:text-red-400">
-                        <i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i>
-                        <h3 class="font-bold text-lg">System Interruption</h3>
-                        <p class="text-sm mt-1">Failed to properly map current matrix pipeline.</p>
+                    <div class="col-span-full border border-rose-900 bg-rose-950/20 rounded-2xl p-8 text-center text-rose-400">
+                        <h3 class="font-bold text-lg">Local Python Engine Offline</h3>
+                        <p class="text-sm mt-1">Make sure you ran 'uvicorn main:app --reload' in your terminal.</p>
                     </div>`;
             }
         }
-
-        function displayItems(items) {
-            const grid = document.getElementById('price-grid');
-            grid.innerHTML = '';
-            
-            items.forEach(item => {
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-darkCard rounded-2xl border border-gray-200 dark:border-slate-800/80 overflow-hidden shadow-sm flex flex-col hover:shadow-lg transition-all";
-                card.innerHTML = `
-                    <div class="relative pt-[56.25%] bg-slate-900">
-                        <img src="${item.image_url}" class="absolute inset-0 w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500'">
-                        <div class="absolute top-3 left-3 flex flex-col gap-2">
-                            <span class="bg-rose-600 text-white px-2.5 py-1 rounded-md text-xs font-black shadow-md">${item.discount_tag}</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex flex-col flex-grow">
-                        <h3 class="font-bold text-sm mb-4 line-clamp-2 h-10">${item.item_name}</h3>
-                        <div class="flex flex-col mb-5 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-gray-100 dark:border-slate-800">
-                            <div class="flex justify-between items-baseline text-xs font-semibold text-slate-400 line-through mb-1">
-                                <span>List Price</span><span>${item.original_price}</span>
-                            </div>
-                            <div class="flex justify-between items-baseline">
-                                <span class="text-xs uppercase font-bold text-rose-500">Live Sale price</span>
-                                <span class="text-xl font-black text-rose-600 dark:text-rose-400">${item.observed_price_ph}</span>
-                            </div>
-                        </div>
-                        <a href="${item.store_url}" target="_blank" rel="noopener noreferrer" class="w-full text-center bg-gray-100 hover:bg-rose-600 dark:bg-slate-800 dark:hover:bg-rose-600 text-slate-700 dark:text-slate-300 hover:text-white py-2.5 rounded-xl font-bold transition-all text-xs flex items-center justify-center space-x-2">
-                            <span>Inspect Store Listing</span><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                        </a>
-                    </div>`;
-                grid.appendChild(card);
-            });
-        }
-        window.addEventListener('DOMContentLoaded', fetchLivePrices);
     </script>
 </body>
 </html>
