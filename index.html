@@ -35,26 +35,23 @@
     <main class="max-w-7xl mx-auto px-6 py-10">
         <div class="mb-8 p-5 bg-indigo-50 dark:bg-slate-900/50 border border-indigo-100 dark:border-slate-800/80 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>
-                <h2 class="text-lg font-semibold">Active Web Parsing Node</h2>
+                <h2 class="text-lg font-semibold">Active Browser Parsing Node</h2>
                 <p class="text-sm text-slate-500 dark:text-slate-400">Pulling unmodified data directly from unfiltered public server web streams.</p>
             </div>
             <div class="flex items-center space-x-2 bg-white dark:bg-darkCard px-3 py-1.5 rounded-xl border border-gray-200 dark:border-slate-800 text-xs font-semibold text-indigo-600">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>External Links Active</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Direct Browser API Hook Active</span>
             </div>
         </div>
 
         <div id="price-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
                 <i class="fa-solid fa-spinner animate-spin text-4xl mb-4 text-indigo-500"></i>
-                <p class="text-sm font-medium">Contacting Render web application layers...</p>
+                <p class="text-sm font-medium">Contacting live internet deal engine directly...</p>
             </div>
         </div>
     </main>
 
     <script>
-        // Make sure this exact endpoint is configured to point to your live backend instance URL
-        const API_ENDPOINT = "https://my-first-api22.onrender.com/get-prices";
-
         function toggleDarkMode() {
             const html = document.documentElement;
             html.classList.toggle('dark');
@@ -63,23 +60,46 @@
 
         async function fetchLivePrices() {
             const grid = document.getElementById('price-grid');
+            // We fetch directly from the live open tech deals API right here in the frontend!
+            const TARGET_API = "https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=50";
+            
             try {
-                const response = await fetch(API_ENDPOINT);
-                const result = await response.json();
-                if (result.status === "success" && result.data) {
-                    displayItems(result.data);
-                } else {
-                    throw new Error("Empty payload matrix");
-                }
+                const response = await fetch(TARGET_API);
+                const rawDeals = await response.json();
+                
+                const liveItems = [];
+                const usdToPhp = 58.50;
+                
+                // Take the top 6 real, live changing deals from the internet right now
+                rawDeals.slice(0, 6).forEach(deal => {
+                    const phpOriginal = floatFormat(deal.normalPrice * usdToPhp);
+                    const phpSale = floatFormat(deal.salePrice * usdToPhp);
+                    const discountPct = Math.round(parseFloat(deal.savings));
+                    
+                    liveItems.append({
+                        item_name: deal.title,
+                        original_price: `₱${phpOriginal}`,
+                        observed_price_ph: `₱${phpSale}`,
+                        discount_tag: `-${discountPct}% OFF`,
+                        image_url: deal.thumb,
+                        store_url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`
+                    });
+                });
+                
+                displayItems(liveItems);
             } catch (e) {
                 console.error(e);
                 grid.innerHTML = `
                     <div class="col-span-full bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-8 text-center text-red-600 dark:text-red-400">
                         <i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i>
-                        <h3 class="font-bold text-lg">Server Connection Failed</h3>
-                        <p class="text-sm mt-1">Render is either sleeping or building. Give it 60 seconds and click 'Scan Real Live Feeds' again!</p>
+                        <h3 class="font-bold text-lg">Internet Connection Interrupted</h3>
+                        <p class="text-sm mt-1">Check your network connection and try again.</p>
                     </div>`;
             }
+        }
+
+        function floatFormat(num) {
+            return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         }
 
         function displayItems(items) {
