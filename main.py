@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Enable CORS so your Vercel frontend can securely query the data stream
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,49 +13,47 @@ app.add_middleware(
 
 @app.get("/get-prices")
 def get_prices():
-    # Curated PH tech item matrix with verified imagery and targeted store redirection paths
     items = [
         {
             "item_name": "AULA F75 Mechanical Keyboard (Wireless/Gasket Mount)", 
             "observed_price_ph": "₱2,199.00", 
             "status": "In Stock",
-            "image_url": "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&auto=format&fit=crop&q=80",
-            # Replace these URLs with the exact product page links you want to monitor
+            "image_url": "https://i.imgur.com/KdfQ9Pz.png",
             "store_url": "https://www.lazada.com.ph/tag/aula-f75/"
         },
         {
             "item_name": "Govee RGBIC LED Strip Light (5 Meters)", 
             "observed_price_ph": "₱1,150.00", 
             "status": "In Stock",
-            "image_url": "https://images.unsplash.com/photo-1565814636199-ae8133055c1c?w=600&auto=format&fit=crop&q=80",
+            "image_url": "https://i.imgur.com/39A1Sle.png",
             "store_url": "https://www.lazada.com.ph/tag/govee-rgbic/"
         },
         {
             "item_name": "Premium Felt Desk Mat & Mousepad (900x400mm)", 
             "observed_price_ph": "₱380.00", 
             "status": "In Stock",
-            "image_url": "https://images.unsplash.com/photo-1632292224971-0d45778b3af8?w=600&auto=format&fit=crop&q=80",
+            "image_url": "https://i.imgur.com/8N69wZ0.png",
             "store_url": "https://www.lazada.com.ph/tag/felt-desk-mat/"
         },
         {
             "item_name": "Delux M618DB Ergonomic Vertical Wireless Mouse", 
             "observed_price_ph": "₱945.00", 
             "status": "Out of Stock",
-            "image_url": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&auto=format&fit=crop&q=80",
+            "image_url": "https://i.imgur.com/6XzW79B.png",
             "store_url": "https://www.lazada.com.ph/tag/delux-m618/"
         },
         {
             "item_name": "HyperX QuadCast S RGB USB Condenser Microphone", 
             "observed_price_ph": "₱7,990.00", 
             "status": "In Stock",
-            "image_url": "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=600&auto=format&fit=crop&q=80",
+            "image_url": "https://i.imgur.com/b7NoxXF.png",
             "store_url": "https://www.lazada.com.ph/tag/hyperx-quadcast-s/"
         },
         {
             "item_name": "Logitech G502 Hero High Performance Gaming Mouse", 
             "observed_price_ph": "₱2,450.00", 
             "status": "In Stock",
-            "image_url": "https://images.unsplash.com/photo-1625842268584-8f3290462a41?w=600&auto=format&fit=crop&q=80",
+            "image_url": "https://i.imgur.com/Z42533w.png",
             "store_url": "https://www.lazada.com.ph/tag/logitech-g502-hero/"
         }
     ]
