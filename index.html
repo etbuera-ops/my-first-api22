@@ -60,7 +60,6 @@
 
         async function fetchLivePrices() {
             const grid = document.getElementById('price-grid');
-            // We fetch directly from the live open tech deals API right here in the frontend!
             const TARGET_API = "https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=50";
             
             try {
@@ -70,19 +69,23 @@
                 const liveItems = [];
                 const usdToPhp = 58.50;
                 
-                // Take the top 6 real, live changing deals from the internet right now
+                // Fixed slicing and push methods
                 rawDeals.slice(0, 6).forEach(deal => {
-                    const phpOriginal = floatFormat(deal.normalPrice * usdToPhp);
-                    const phpSale = floatFormat(deal.salePrice * usdToPhp);
+                    const originalPriceUSD = parseFloat(deal.normalPrice);
+                    const salePriceUSD = parseFloat(deal.salePrice);
+                    
+                    const phpOriginal = (originalPriceUSD * usdToPhp).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                    const phpSale = (salePriceUSD * usdToPhp).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
                     const discountPct = Math.round(parseFloat(deal.savings));
                     
-                    liveItems.append({
+                    // Fixed: using JavaScript .push() instead of Python .append()
+                    liveItems.push({
                         item_name: deal.title,
-                        original_price: `₱${phpOriginal}`,
-                        observed_price_ph: `₱${phpSale}`,
-                        discount_tag: `-${discountPct}% OFF`,
+                        original_price: "₱" + phpOriginal,
+                        observed_price_ph: "₱" + phpSale,
+                        discount_tag: "-" + discountPct + "% OFF",
                         image_url: deal.thumb,
-                        store_url: `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`
+                        store_url: "https://www.cheapshark.com/redirect?dealID=" + deal.dealID
                     });
                 });
                 
@@ -98,13 +101,14 @@
             }
         }
 
-        function floatFormat(num) {
-            return num.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        }
-
         function displayItems(items) {
             const grid = document.getElementById('price-grid');
             grid.innerHTML = '';
+            
+            if (items.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-sm text-slate-400">No active deals found.</p>`;
+                return;
+            }
             
             items.forEach(item => {
                 const card = document.createElement('div');
