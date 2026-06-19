@@ -1,41 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PH Tech Live Price Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans min-h-screen">
+<body class="bg-slate-50 text-slate-900 dark:bg-gray-950 dark:text-gray-100 font-sans min-h-screen transition-colors duration-300">
 
     <div class="max-w-6xl mx-auto px-4 py-8">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-800 pb-6 mb-8 gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 dark:border-gray-800 pb-6 mb-8 gap-4">
             <div>
-                <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                <h1 class="text-3xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-emerald-400">
                     PH Tech & Gadgets Monitor
                 </h1>
-                <p class="text-gray-400 mt-1">Live wholesale market pricing & inventory index tracking feed</p>
+                <p class="text-slate-500 dark:text-gray-400 mt-1">Live wholesale market pricing & inventory index tracking feed</p>
             </div>
-            <button onclick="fetchLatestPrices()" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-200 ease-in-out flex items-center gap-2">
-                🔄 Sync Live Feed
-            </button>
+            
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <button onclick="toggleTheme()" class="bg-slate-200 hover:bg-slate-300 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-gray-200 p-2.5 rounded-lg transition duration-200 shadow-sm flex items-center justify-center" title="Toggle Theme">
+                    <span id="themeIcon" class="text-xl">🌙</span>
+                </button>
+                
+                <button onclick="fetchLatestPrices()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2">
+                    🔄 Sync Live Feed
+                </button>
+            </div>
         </div>
 
-        <div class="mb-6">
-            <input type="text" id="searchInput" onkeyup="filterItems()" placeholder="Search tracked components or accessories..." class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="mb-8">
+            <input type="text" id="searchInput" onkeyup="filterItems()" placeholder="Search tracked components or hardware variants..." class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl px-4 py-3.5 text-slate-900 dark:text-gray-100 placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition duration-150">
         </div>
 
-        <div id="loadingState" class="text-center py-12 text-gray-400 font-medium">
-            <p class="animate-pulse">Querying cloud micro-containers for local pricing data arrays...</p>
+        <div id="loadingState" class="text-center py-20 text-slate-500 dark:text-gray-400 font-medium">
+            <p class="animate-pulse text-lg">Querying dynamic pricing data structures...</p>
         </div>
 
-        <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
             </div>
     </div>
 
     <script>
-        // Replace this with your actual Render API address!
+        // Make sure this points to your exact Render API link!
         const API_URL = "https://ph-tech-api.onrender.com/get-prices";
+
+        function toggleTheme() {
+            const htmlElement = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize user preferred styling options on startup
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('themeIcon').textContent = '☀️';
+        }
 
         async function fetchLatestPrices() {
             const grid = document.getElementById('productGrid');
@@ -53,32 +86,50 @@
                     loader.classList.add('hidden');
                     grid.classList.remove('hidden');
                 } else {
-                    loader.innerHTML = `<p class="text-red-400">Failed payload collection response: ${result.message}</p>`;
+                    loader.innerHTML = `<p class="text-red-500">Failed payload collection: ${result.message}</p>`;
                 }
             } catch (error) {
-                loader.innerHTML = `<p class="text-red-400">Gateway connectivity timeout error or blocked cross-origin request.</p>`;
+                loader.innerHTML = `<p class="text-red-500">Gateway connectivity timeout error or blocked cross-origin request.</p>`;
             }
         }
 
         function renderCards(items) {
             const grid = document.getElementById('productGrid');
-            grid.innerHTML = ''; // Wipe stale rows
+            grid.innerHTML = ''; 
 
             items.forEach(item => {
                 const isStocked = item.status === "In Stock";
                 const statusBadge = isStocked 
-                    ? `<span class="bg-emerald-950 text-emerald-400 px-2.5 py-1 rounded text-xs font-bold border border-emerald-800">AVAILABLE</span>`
-                    : `<span class="bg-rose-950 text-rose-400 px-2.5 py-1 rounded text-xs font-bold border border-rose-800">OUT OF STOCK</span>`;
+                    ? `<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-400 px-2.5 py-1 rounded-md text-xs font-bold border border-emerald-200 dark:border-emerald-800/60 uppercase">Available</span>`
+                    : `<span class="bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-400 px-2.5 py-1 rounded-md text-xs font-bold border border-rose-200 dark:border-rose-800/60 uppercase">Out of Stock</span>`;
 
                 const cardHtml = `
-                    <div class="product-card bg-gray-800 border border-gray-700 hover:border-gray-600 rounded-xl p-5 shadow-sm transition duration-150 hover:-translate-y-1">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="item-name text-lg font-bold text-white tracking-wide max-w-[70%]">${item.item_name}</h3>
-                            ${statusBadge}
+                    <div class="product-card group bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col hover:-translate-y-1.5">
+                        <div class="relative h-48 w-full bg-slate-100 dark:bg-gray-800 overflow-hidden border-b border-slate-100 dark:border-gray-800/50">
+                            <img src="${item.image_url || 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500'}" 
+                                 alt="${item.item_name}" 
+                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                 loading="lazy">
+                            <div class="absolute top-3 right-3 shadow-sm">
+                                ${statusBadge}
+                            </div>
                         </div>
-                        <div class="mt-4 pt-4 border-t border-gray-700/50 flex justify-between items-baseline">
-                            <span class="text-xs text-gray-500 uppercase tracking-widest font-semibold">Benchmark Value</span>
-                            <span class="text-2xl font-black text-emerald-400 font-mono">${item.observed_price_ph}</span>
+                        
+                        <div class="p-5 flex flex-col flex-1 justify-between">
+                            <div>
+                                <h3 class="item-name text-lg font-bold text-slate-800 dark:text-gray-100 tracking-wide line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">${item.item_name}</h3>
+                            </div>
+                            
+                            <div class="mt-5">
+                                <div class="flex justify-between items-baseline mb-4">
+                                    <span class="text-xs text-slate-400 dark:text-gray-500 uppercase tracking-widest font-bold">Benchmark Value</span>
+                                    <span class="text-2xl font-black text-blue-600 dark:text-emerald-400 font-mono tracking-tight">${item.observed_price_ph}</span>
+                                </div>
+                                
+                                <a href="${item.store_url || '#'}" target="_blank" class="w-full bg-slate-100 hover:bg-blue-600 dark:bg-gray-800 dark:hover:bg-blue-600 text-slate-700 hover:text-white dark:text-gray-200 dark:hover:text-white font-bold py-2.5 px-4 rounded-xl text-center text-sm transition-all duration-200 flex items-center justify-center gap-2 border border-slate-200/60 dark:border-gray-700/50 hover:border-blue-600 dark:hover:border-blue-600 shadow-sm">
+                                    <span>View Item in Store</span> 🚀
+                                </a>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -100,7 +151,6 @@
             }
         }
 
-        // Initialize and fire up the dashboard state array when view finishes loading
         window.onload = fetchLatestPrices;
     </script>
 </body>
