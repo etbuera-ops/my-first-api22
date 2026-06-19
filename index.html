@@ -32,7 +32,7 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <button onclick="fetchLivePrices()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition-all flex items-center space-x-2">
+                <button onclick="loadLocalPrices()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium shadow-md transition-all flex items-center space-x-2">
                     <i class="fa-solid fa-rotate text-sm"></i>
                     <span>Sync Live Feed</span>
                 </button>
@@ -51,23 +51,62 @@
             </div>
             <div class="flex items-center space-x-2 bg-white dark:bg-darkCard px-3 py-1.5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm text-xs font-semibold text-indigo-600 dark:text-indigo-400">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Active Fetch Node: Vercel Cloud Platform</span>
+                <span>Active Status: Direct Standalone Injection Engine</span>
             </div>
         </div>
 
         <div id="price-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-400">
-                <i class="fa-solid fa-spinner animate-spin text-4xl mb-4 text-indigo-500"></i>
-                <p class="text-sm font-medium">Connecting to Render backend instance matrix...</p>
             </div>
-        </div>
     </main>
 
     <script>
-        // Set the exact target URL for your Render deployment
-        const API_ENDPOINT = "https://my-first-api22.onrender.com/get-prices";
+        // Local direct database array — zero dependency on external render links!
+        const productDatabase = [
+            {
+                "item_name": "AULA F75 Mechanical Keyboard (Wireless/Gasket Mount)", 
+                "observed_price_ph": "₱2,199.00", 
+                "status": "In Stock",
+                "image_url": "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&auto=format&fit=crop&q=80",
+                "store_url": "https://www.lazada.com.ph/tag/aula-f75/"
+            },
+            {
+                "item_name": "Govee RGBIC LED Strip Light (5 Meters)", 
+                "observed_price_ph": "₱1,150.00", 
+                "status": "In Stock",
+                "image_url": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=600&auto=format&fit=crop&q=80",
+                "store_url": "https://www.lazada.com.ph/tag/govee-rgbic/"
+            },
+            {
+                "item_name": "Premium Felt Desk Mat & Mousepad (900x400mm)", 
+                "observed_price_ph": "₱380.00", 
+                "status": "In Stock",
+                "image_url": "https://images.unsplash.com/photo-1632292224971-0d45778b3af8?w=600&auto=format&fit=crop&q=80",
+                "store_url": "https://www.lazada.com.ph/tag/felt-desk-mat/"
+            },
+            {
+                "item_name": "Delux M618DB Ergonomic Vertical Wireless Mouse", 
+                "observed_price_ph": "₱945.00", 
+                "status": "Out of Stock",
+                "image_url": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&auto=format&fit=crop&q=80",
+                "store_url": "https://www.lazada.com.ph/tag/delux-m618/"
+            },
+            {
+                "item_name": "HyperX QuadCast S RGB USB Condenser Microphone", 
+                "observed_price_ph": "₱7,990.00", 
+                "status": "In Stock",
+                "image_url": "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=600&auto=format&fit=crop&q=80",
+                "store_url": "https://www.lazada.com.ph/tag/hyperx-quadcast-s/"
+            },
+            {
+                "item_name": "Logitech G502 Hero High Performance Gaming Mouse", 
+                "observed_price_ph": "₱2,450.00", 
+                "status": "In Stock",
+                "image_url": "https://images.unsplash.com/photo-1625842268584-8f3290462a41?w=600&auto=format&fit=crop&q=80",
+                "store_url": "https://www.lazada.com.ph/tag/logitech-g502-hero/"
+            }
+        ];
 
-        // Night Mode State Utility Switcher
+        // Dark/Light Mode Engine Switch
         function toggleDarkMode() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
@@ -82,75 +121,28 @@
             }
         }
 
-        // Keep local system memory layout preference
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
             document.getElementById('theme-icon').className = 'fa-solid fa-sun text-lg';
         }
 
-        // Main Core Fetch Execution Thread
-        async function fetchLivePrices() {
+        // Render Data Directly to Grid Screen
+        function loadLocalPrices() {
             const grid = document.getElementById('price-grid');
-            try {
-                const response = await fetch(API_ENDPOINT);
-                const result = await response.json();
-                
-                if (result.status === "success" && result.data) {
-                    displayItems(result.data);
-                } else {
-                    throw new Error("Invalid backend server json structure");
-                }
-            } catch (error) {
-                console.error("Fetch failure:", error);
-                grid.innerHTML = `
-                    <div class="col-span-full bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-8 text-center text-red-600 dark:text-red-400">
-                        <i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i>
-                        <h3 class="font-bold text-lg">Server Handshake Interrupted</h3>
-                        <p class="text-sm mt-1 max-w-md mx-auto">Could not populate data feed stream. Verify your Render Web Service instance is fully active.</p>
-                    </div>`;
-            }
-        }
+            grid.innerHTML = ''; 
 
-        // UI Generation Engine with Built-in Hardcoded Image & Link Overrides
-        function displayItems(items) {
-            const grid = document.getElementById('price-grid');
-            grid.innerHTML = ''; // Clean old template UI frame
-
-            items.forEach(item => {
-                // FORCE REPAIR: Absolute Frontend Overrides to crush the shoe links and target real items
-                if (item.item_name.includes("Keyboard") || item.item_name.includes("F75")) {
-                    item.image_url = "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500&q=80";
-                    item.store_url = "https://www.lazada.com.ph/tag/aula-f75/";
-                } else if (item.item_name.includes("LED Strip") || item.item_name.includes("Govee")) {
-                    item.image_url = "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=500&q=80"; // Crisp LED neon room lighting
-                    item.store_url = "https://www.lazada.com.ph/tag/govee-rgbic/";
-                } else if (item.item_name.includes("Desk Mat") || item.item_name.includes("Felt")) {
-                    item.image_url = "https://images.unsplash.com/photo-1632292224971-0d45778b3af8?w=500&q=80";
-                    item.store_url = "https://www.lazada.com.ph/tag/felt-desk-mat/";
-                } else if (item.item_name.includes("Mouse") && item.item_name.includes("Vertical")) {
-                    item.image_url = "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&q=80";
-                    item.store_url = "https://www.lazada.com.ph/tag/delux-m618/";
-                } else if (item.item_name.includes("Microphone") || item.item_name.includes("QuadCast")) {
-                    item.image_url = "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=500&q=80";
-                    item.store_url = "https://www.lazada.com.ph/tag/hyperx-quadcast-s/";
-                } else if (item.item_name.includes("G502") || item.item_name.includes("Gaming Mouse")) {
-                    item.image_url = "https://images.unsplash.com/photo-1625842268584-8f3290462a41?w=500&q=80";
-                    item.store_url = "https://www.lazada.com.ph/tag/logitech-g502-hero/";
-                }
-
-                // Status Badge Configurations
+            productDatabase.forEach(item => {
                 const isAvailable = item.status.toLowerCase() === 'in stock';
                 const badgeClass = isAvailable 
                     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400' 
                     : 'bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-400';
 
-                // Build Individual Dynamic Component Blueprint
                 const card = document.createElement('div');
                 card.className = "bg-white dark:bg-darkCard rounded-2xl border border-gray-200 dark:border-slate-800/80 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col";
                 
                 card.innerHTML = `
                     <div class="relative pt-[56.25%] bg-slate-100 dark:bg-slate-900 overflow-hidden group">
-                        <img src="${item.image_url}" alt="${item.item_name}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&q=80'">
+                        <img src="${item.image_url}" alt="${item.item_name}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-3 right-3">
                             <span class="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider shadow-sm ${badgeClass}">
                                 ${item.status}
@@ -163,6 +155,8 @@
                             <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Benchmark Value</span>
                             <span class="text-2xl font-black text-indigo-600 dark:text-indigo-400">${item.observed_price_ph}</span>
                         </div>
+                    </div>
+                    <div class="px-6 pb-6 mt-auto">
                         <a href="${item.store_url}" target="_blank" rel="noopener noreferrer" class="w-full text-center bg-gray-100 hover:bg-indigo-600 dark:bg-slate-800 dark:hover:bg-indigo-600 text-slate-700 dark:text-slate-300 hover:text-white dark:hover:text-white py-3 rounded-xl font-bold transition-all duration-200 text-sm flex items-center justify-center space-x-2 shadow-sm">
                             <span>View Item in Store</span>
                             <i class="fa-solid fa-rocket text-xs"></i>
@@ -173,8 +167,8 @@
             });
         }
 
-        // Run fetch on base mount
-        window.addEventListener('DOMContentLoaded', fetchLivePrices);
+        // Boot automatically on launch
+        window.addEventListener('DOMContentLoaded', loadLocalPrices);
     </script>
 </body>
 </html>
